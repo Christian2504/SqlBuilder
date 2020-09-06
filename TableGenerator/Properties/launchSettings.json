@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TableGenerator": {
+      "commandName": "Project",
+      "commandLineArgs": "$(SolutionDir)SqlBuilderSamplesAndTests\\sql\\SampleSqlServerDatabaseCreateObjects.sql $(SolutionDir)SqlBuilderSamplesAndTests\\Tables.cs"
+    }
+  }
+}
