@@ -14,6 +14,8 @@ namespace SqlBuilderFramework
 
     public abstract class DbTable
     {
+        protected string Alias;
+
         protected DbTable(string @alias = null)
         {
             Alias = alias;
@@ -43,12 +45,12 @@ namespace SqlBuilderFramework
         {
             return new DbJoinedTable(this, rightTable, JoinMode.Left, constraint);
         }
-
-        protected string Alias;
     }
 
     public class DbPlainTable : DbTable
     {
+        private readonly string _name;
+
         public DbPlainTable(string name)
         {
             _name = name;
@@ -68,8 +70,6 @@ namespace SqlBuilderFramework
         {
             return null;
         }
-
-        private readonly string _name;
     }
 
     public class DbJoinedTable : DbTable
@@ -175,6 +175,8 @@ namespace SqlBuilderFramework
 
     public class DbInlineTable : DbTable
     {
+        private readonly ISqlBuilder _query;
+
         public DbInlineTable(ISqlBuilder query, string @alias = null)
             : base(alias)
         {
@@ -195,7 +197,5 @@ namespace SqlBuilderFramework
         {
             return _query == query ? this : null;
         }
-
-        private readonly ISqlBuilder _query;
     }
 }

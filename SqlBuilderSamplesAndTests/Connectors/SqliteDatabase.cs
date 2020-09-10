@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.SQLite;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using SqlBuilderFramework;
@@ -9,32 +10,57 @@ namespace SqlBuilderSamplesAndTests
 {
     public class SqLiteDatabase : AbstractDatabase
     {
-        private readonly SQLiteConnection _connection;
+        private readonly bool _enableForeignKeys;
+
+        private SQLiteConnection _connection;
 
         /// <summary>
         /// NEVER make the connection public!!!
         /// Only this class controls the connection!!!
         /// </summary>
-        protected override IDbConnection Connection => _connection;
+        protected SQLiteConnection Connection
+        {
+            get
+            {
+                if (_connection == null)
+                {
+                    _connection = new SQLiteConnection(ConnectionString); // "FullUri=file::memory:?cache=shared"
+                    _connection.Open();
 
-        public override string DatabaseName => _connection.FileName;
+                    if (_enableForeignKeys)
+                    {
+                        ExecuteNonQuery("PRAGMA foreign_keys = ON");
+#if DEBUG
+                        using (var reader = ExecuteReader("PRAGMA foreign_keys"))
+                        {
+                            Debug.Assert(reader.Next());
+                            Debug.Assert(reader.GetLong(0) == 1);
+                        }
+#endif
+                    }
+                }
+
+                return _connection;
+            }
+        }
+
+        public override string DatabaseName => Connection.FileName;
 
         public override DatabaseProvider Provider => DatabaseProvider.Sqlite;
 
         /// <inheritdoc />
         public override string SchemaName => string.Empty;
 
+        public override bool IsConnected => Connection.State == ConnectionState.Open;
+
         /// <summary>
         /// Remark: Do not close the connection of an in-memory database.
         /// </summary>
         /// <param name="name"></param>
-        public SqLiteDatabase(string name)
+        public SqLiteDatabase(string name, bool enableForeignKeys)
         {
             ConnectionString = $"Data Source={name}";
-
-            _connection = new SQLiteConnection(ConnectionString); // "FullUri=file::memory:?cache=shared"
-
-            _connection.Open();
+            _enableForeignKeys = enableForeignKeys;
         }
 
         ~SqLiteDatabase()
@@ -47,7 +73,7 @@ namespace SqlBuilderSamplesAndTests
             if (type == CommandType.StoredProcedure)
                 return new SqliteProcedure(this) {Sql = sql};
 
-            var command = _connection.CreateCommand();
+            var command = Connection.CreateCommand();
 
             return new SqlStatement(this, command) {Sql = sql, Type = type};
         }
@@ -110,14 +136,24 @@ namespace SqlBuilderSamplesAndTests
 
         public override DataTable GetSchema(string collectionName, string[] restrictionValues)
         {
-            return _connection.GetSchema(collectionName, restrictionValues);
+            return Connection.GetSchema(collectionName, restrictionValues);
+        }
+
+        public override IDbTransaction CreateTransaction()
+        {
+            return Connection.BeginTransaction();
+        }
+
+        public override IDbTransaction CreateTransaction(IsolationLevel il)
+        {
+            return Connection.BeginTransaction(il);
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                _connection.Dispose();
+                _connection?.Dispose();
             }
         }
     }

@@ -67,18 +67,7 @@ namespace SqlBuilderSamplesAndTests
         {
             var dbName = _dbSettings.Value.Database;
             var isNew = dbName == ":memory:" || !File.Exists(dbName);
-            var sqLite = new SqLiteDatabase(dbName);
-
-            // Enable foreign keys
-
-            sqLite.ExecuteNonQuery("PRAGMA foreign_keys = ON");
-#if DEBUG
-            using (var reader = sqLite.ExecuteReader("PRAGMA foreign_keys"))
-            {
-                Debug.Assert(reader.Next());
-                Debug.Assert(reader.GetLong(0) == 1);
-            }
-#endif
+            var sqLite = new SqLiteDatabase(dbName, true);
 
             // Initialize a new database
 

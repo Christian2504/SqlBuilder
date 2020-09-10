@@ -240,7 +240,6 @@ namespace SqlBuilderSamplesAndTests
             return null;
         }
 
-        public DbTypedColumn<string> ColCapmatixUsername => new DbTypedColumn<string>(new DbTableColumn(this, "CapmatixUsername", 60, 0));
         public DbTypedColumn<string> ColFirstName => new DbTypedColumn<string>(new DbTableColumn(this, "FirstName", 60, 0));
         public DbTypedColumn<int> ColId => new DbTypedColumn<int>(new DbTableColumn(this, "Id", 0, 0));
         public DbTypedColumn<bool> ColIsActive => new DbTypedColumn<bool>(new DbTableColumn(this, "IsActive", 0, 0));

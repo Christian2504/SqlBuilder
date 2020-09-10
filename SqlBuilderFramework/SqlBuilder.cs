@@ -507,11 +507,22 @@ namespace SqlBuilderFramework
             }
         }
 
+        public int Execute(IDatabase database)
+        {
+            return ExecuteNonQuery(database);
+        }
+
+        public int Execute()
+        {
+            return ExecuteNonQuery();
+        }
+
         public int ExecuteNonQuery(IDatabase database)
         {
             Database = database;
             return ExecuteNonQuery();
         }
+
         public int ExecuteNonQuery()
         {
             var command = Command();

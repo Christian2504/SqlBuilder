@@ -25,7 +25,6 @@ CREATE TABLE production.Users
 	Username            NVARCHAR(25)  NOT NULL,
 	Password            NCHAR(60)     NOT NULL,
 	Role                NVARCHAR(20)  NOT NULL,
-	CapmatixUsername    NVARCHAR(60)  ,
 	CONSTRAINT UNIQUE_Users_Username UNIQUE (Username)
 );
 

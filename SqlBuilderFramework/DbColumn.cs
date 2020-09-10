@@ -544,9 +544,9 @@ namespace SqlBuilderFramework
 
         public DbValueColumn(T value, string @alias = null)
         {
+            _value = value;
             Alias = alias;
             Type = typeof(T);
-            _value = value;
         }
 
         public string Sql(List<ParameterEntity> parameterList, ISqlBuilder query, IDatabase database)
@@ -589,10 +589,10 @@ namespace SqlBuilderFramework
 
         public DbExprColumn(string expression, bool isAggregate, IEnumerable<IDbColumnImpl> columnList, string @alias = null)
         {
-            Alias = alias;
             _expression = expression;
-            IsAggregate = isAggregate;
             _columnList = columnList;
+            Alias = alias;
+            IsAggregate = isAggregate;
         }
 
         public string Sql(List<ParameterEntity> parameterList, ISqlBuilder query, IDatabase database)
@@ -630,8 +630,8 @@ namespace SqlBuilderFramework
 
         public DbListColumn(IEnumerable<IDbColumnImpl> columnList, string @alias = null)
         {
-            Alias = alias;
             _columnList = columnList;
+            Alias = alias;
         }
 
         public string Sql(List<ParameterEntity> parameterList, ISqlBuilder query, IDatabase database)
@@ -665,11 +665,11 @@ namespace SqlBuilderFramework
 
         public DbTableColumn(DbTable table, string name, int size, int scale, string @alias = null)
         {
+            _size = size;
+            _scale = scale;
             Alias = alias;
             Table = table;
             Name = name;
-            _size = size;
-            _scale = scale;
         }
 
         public string Sql(List<ParameterEntity> parameterList, ISqlBuilder query, IDatabase database)
@@ -712,8 +712,8 @@ namespace SqlBuilderFramework
 
         public DbConditionColumn(DbConstraint constraint, string @alias = null)
         {
-            Alias = alias;
             _constraint = constraint;
+            Alias = alias;
         }
 
         public string Sql(List<ParameterEntity> parameterList, ISqlBuilder query, IDatabase database)
@@ -744,8 +744,8 @@ namespace SqlBuilderFramework
 
         public DbQueryColumn(ISqlBuilder query, string @alias = null)
         {
-            Alias = alias;
             _query = query;
+            Alias = alias;
         }
 
         public string Sql(List<ParameterEntity> parameterList, ISqlBuilder query, IDatabase database)

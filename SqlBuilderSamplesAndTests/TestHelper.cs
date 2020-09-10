@@ -8,11 +8,9 @@ namespace SqlBuilderSamplesAndTests
         public T Value { get; set; }
     }
 
-    public class start
+    public static class TestHelper
     {
-        public IUnityContainer Container = new UnityContainer();
-
-        public void InitIocContainer()
+        public static void RegisterDbManager(IUnityContainer container)
         {
             var databaseOptions = new Options<DatabaseSettings>();
             databaseOptions.Value = new DatabaseSettings
@@ -21,8 +19,8 @@ namespace SqlBuilderSamplesAndTests
                 Database = ":memory:"
             };
 
-            Container.RegisterInstance<IOptions<DatabaseSettings>>(databaseOptions);
-            Container.RegisterSingleton<DatabaseManager>();
+            container.RegisterInstance<IOptions<DatabaseSettings>>(databaseOptions);
+            container.RegisterSingleton<DatabaseManager>();
         }
     }
 }

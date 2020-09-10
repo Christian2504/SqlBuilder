@@ -2,85 +2,91 @@
 using System.Data;
 using System.Globalization;
 using System.Text;
-using Oracle.ManagedDataAccess.Client;
 using SqlBuilderFramework;
-
-// Avoid devart if possible
+using Microsoft.Data.SqlClient;
 
 namespace SqlBuilderSamplesAndTests
 {
-    /// <summary>
-    /// Access to an Oracle database.
-    /// </summary>
-    public class OracleDatabase : AbstractDatabase
+    public class SqlServerDatabase : AbstractDatabase
     {
-        private OracleConnection _connection;
+        private SqlTransaction _transaction;
+
+        private SqlConnection _connection;
 
         /// <summary>
         /// NEVER make the connection public!!!
         /// Only this class controls the connection!!!
         /// </summary>
-        protected override IDbConnection Connection => _connection;
+        protected SqlConnection Connection
+        {
+            get
+            {
+                if (_connection == null)
+                {
+                    _connection = new SqlConnection(ConnectionString);
+                    _connection.Open();
+                }
 
-        public override string DatabaseName => _connection.Database;
+                return _connection;
+            }
+        }
 
-        public override DatabaseProvider Provider => DatabaseProvider.Oracle;
+        public override string DatabaseName => Connection.Database;
 
-        public int FetchSize { get; set; }
+        public override DatabaseProvider Provider => DatabaseProvider.MsSql;
 
         /// <inheritdoc />
-        public override string SchemaName => string.Empty;
+        public override string SchemaName => "dbo";
 
-	public OracleDatabase(string host, string port, string dbName, string user, string password)
+        public override bool IsConnected => Connection.State == ConnectionState.Open;
+
+        public SqlServerDatabase(string serverName, string databaseName, string user, string password, bool trustedConnection)
         {
-            ConnectionString = $"Data Source={host}:{port}/{dbName};User Id={user};Password={password};";
+            var builder = new SqlConnectionStringBuilder
+            {
+                DataSource = serverName,
+                InitialCatalog = databaseName,
+                MultipleActiveResultSets = true,
+                PersistSecurityInfo = false,
+                UserID = user,
+                Password = password,
+                TrustServerCertificate = trustedConnection,
+                ConnectRetryCount = 0
+            };
 
-            ConnectionString += "Max Pool Size=2;";
-
-            _connection = new OracleConnection(ConnectionString);
-
-            _connection.Open();
+            ConnectionString = builder.ConnectionString;
         }
 
-        public OracleDatabase(string dbName, string user, string password)
-        {
-            ConnectionString = $"Data Source={dbName};User Id={user};Password={password};";
-
-            ConnectionString += "Max Pool Size=2;";
-
-            _connection = new OracleConnection(ConnectionString);
-
-            _connection.Open();
-        }
-
-        public OracleDatabase(string connectionString)
+        public SqlServerDatabase(string connectionString)
         {
             ConnectionString = connectionString;
-
-            _connection = new OracleConnection(ConnectionString);
-
-            _connection.Open();
         }
 
-        ~OracleDatabase()
+        ~SqlServerDatabase()
         {
             Dispose(false);
         }
 
-        /// <summary>
-        /// Creates a new command as statement object
-        /// </summary>
-        /// <param name="sql"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
+        public override IDbTransaction CreateTransaction()
+        {
+            _transaction = Connection.BeginTransaction();
+            return _transaction;
+        }
+
+        public override IDbTransaction CreateTransaction(IsolationLevel il)
+        {
+            _transaction = Connection.BeginTransaction(il);
+            return _transaction;
+        }
+
         public override ISqlStatement CreateStatement(string sql = null, CommandType type = CommandType.Text)
         {
-            var command = _connection.CreateCommand();
+            if (_transaction != null && _transaction.Connection == null)
+                _transaction = null;
 
-            if (FetchSize > 0)
-            {
-                command.FetchSize = FetchSize;
-            }
+            var command = Connection.CreateCommand();
+
+            command.Transaction = _transaction;
 
             return new SqlStatement(this, command) { Sql = sql, Type = type };
         }
@@ -98,7 +104,7 @@ namespace SqlBuilderSamplesAndTests
             else if (value is decimal d)
                 literal = d.ToString(CultureInfo.InvariantCulture);
             else if (value is DateTime dateTime)
-                literal = $"TO_TIMESTAMP('{dateTime.ToString("dd/MM/yyyy HH:mm:ss,fffffff", CultureInfo.InvariantCulture)}', 'DD/MM/YYYY HH24:MI:SS,FF7')";
+                literal = $"CONVERT(DateTime2, '{dateTime.ToString("yyyy-MM-dd HH:mm:ss.fffffff", CultureInfo.InvariantCulture)}', 121)";
             else if (value is bool boolean)
                 literal = boolean ? "1" : "0";
             else if (value is byte[] ba)
@@ -109,17 +115,14 @@ namespace SqlBuilderSamplesAndTests
                 literal = $"HEXTORAW('{hex}')";
             }
             else
-                literal = $"'{value.ToString().Replace("'", "''")}'";
-
-            if (literal == "''")
-                literal = "NULL";
+                literal = "'" + value.ToString().Replace("\\\r\n", "\\\\\r\n\r\n").Replace("\\\n", "\\\\\n\n").Replace("'", "''") + "'";
 
             return literal;
         }
 
         public override bool TableExists(string tableName)
         {
-            using (var reader = ExecuteReader("select TABLE_NAME from ALL_TABLES where TABLE_NAME = '" + tableName.ToUpper() + "'"))
+            using (var reader = ExecuteReader("SELECT TABLE_NAME from INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '" + tableName.ToUpper() + "'"))
             {
                 return reader.Next();
             }
@@ -127,7 +130,13 @@ namespace SqlBuilderSamplesAndTests
 
         public override IDbDataParameter CreateParameter(string name, object value, DbType dbType, int size = 0, ParameterDirection direction = ParameterDirection.Input)
         {
-            var parameter = new OracleParameter
+            // DateTime.MinValue muss mit null übergeben werden
+            if (value  is DateTime &&  (DateTime)value == DateTime.MinValue)
+            {
+                value = null;
+            }
+
+            var parameter = new SqlParameter
             {
                 ParameterName = ToParameterName(name),
                 Value = value ?? DBNull.Value,
@@ -138,20 +147,17 @@ namespace SqlBuilderSamplesAndTests
             if (size > 0)
                 parameter.Size = size;
 
-            if (value is string && ((string)value).Length > 3000)
-                parameter.OracleDbType = OracleDbType.Clob;
-
             return parameter;
         }
 
         public override DataTable GetSchema(string collectionName, string[] restrictionValues)
         {
-            return _connection.GetSchema(collectionName, restrictionValues);
+            return Connection.GetSchema(collectionName, restrictionValues);
         }
 
         public override string ToParameterName(string name)
         {
-            return ':' + name;
+            return '@' + name;
         }
 
         public override DbType ToDbType(Type type)
@@ -172,7 +178,8 @@ namespace SqlBuilderSamplesAndTests
         {
             if (disposing)
             {
-                _connection.Dispose();
+                _transaction?.Dispose();
+                _connection?.Dispose();
             }
         }
     }
