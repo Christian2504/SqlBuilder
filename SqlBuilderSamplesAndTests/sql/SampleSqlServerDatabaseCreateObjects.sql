@@ -42,17 +42,17 @@ CREATE TABLE production.RefreshToken
 );
 
 CREATE TABLE production.categories (
-	category_id INT IDENTITY (1, 1) PRIMARY KEY,
+	category_id INT NOT NULL IDENTITY (1, 1) PRIMARY KEY,
 	category_name VARCHAR (255) NOT NULL
 );
 
 CREATE TABLE production.brands (
-	brand_id INT IDENTITY (1, 1) PRIMARY KEY,
+	brand_id INT NOT NULL IDENTITY (1, 1) PRIMARY KEY,
 	brand_name VARCHAR (255) NOT NULL
 );
 
 CREATE TABLE production.products (
-	product_id INT IDENTITY (1, 1) PRIMARY KEY,
+	product_id INT NOT NULL IDENTITY (1, 1) PRIMARY KEY,
 	product_name VARCHAR (255) NOT NULL,
 	brand_id INT NOT NULL,
 	category_id INT NOT NULL,
@@ -63,7 +63,7 @@ CREATE TABLE production.products (
 );
 
 CREATE TABLE sales.customers (
-	customer_id INT IDENTITY (1, 1) PRIMARY KEY,
+	customer_id INT NOT NULL IDENTITY (1, 1) PRIMARY KEY,
 	first_name VARCHAR (255) NOT NULL,
 	last_name VARCHAR (255) NOT NULL,
 	phone VARCHAR (25),
@@ -75,7 +75,7 @@ CREATE TABLE sales.customers (
 );
 
 CREATE TABLE sales.stores (
-	store_id INT IDENTITY (1, 1) PRIMARY KEY,
+	store_id INT NOT NULL IDENTITY (1, 1) PRIMARY KEY,
 	store_name VARCHAR (255) NOT NULL,
 	phone VARCHAR (25),
 	email VARCHAR (255),
@@ -86,7 +86,7 @@ CREATE TABLE sales.stores (
 );
 
 CREATE TABLE sales.staffs (
-	staff_id INT IDENTITY (1, 1) PRIMARY KEY,
+	staff_id INT NOT NULL IDENTITY (1, 1) PRIMARY KEY,
 	first_name VARCHAR (50) NOT NULL,
 	last_name VARCHAR (50) NOT NULL,
 	email VARCHAR (255) NOT NULL UNIQUE,
@@ -99,7 +99,7 @@ CREATE TABLE sales.staffs (
 );
 
 CREATE TABLE sales.orders (
-	order_id INT IDENTITY (1, 1) PRIMARY KEY,
+	order_id INT NOT NULL IDENTITY (1, 1) PRIMARY KEY,
 	customer_id INT,
 	order_status tinyint NOT NULL,
 	-- Order status: 1 = Pending; 2 = Processing; 3 = Rejected; 4 = Completed

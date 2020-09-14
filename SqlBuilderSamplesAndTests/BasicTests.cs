@@ -1,4 +1,5 @@
 using SqlBuilderFramework;
+using System;
 using Unity;
 using Xunit;
 
@@ -45,6 +46,29 @@ namespace SqlBuilderSamplesAndTests
                         tblUsers.ColFirstName.ConcatWith(" ").ConcatWith(tblUsers.ColLastName)));
 
             Assert.Equal(new[] { "Armin Administrator", "Max Mustermann", "Anton Tester" }, userNames);
+        }
+
+        [Fact]
+        public void AddOrder()
+        {
+            IUnityContainer container = new UnityContainer();
+
+            TestHelper.RegisterDbManager(container);
+
+            var dbManager = container.Resolve<DatabaseManager>();
+
+            var database = dbManager.Connect();
+
+            Assert.Equal(1616, database.Insert
+                .In(Tables.orders)
+                .Set(
+                    Tables.orders.Colcustomer_id.To(1),
+                    Tables.orders.Colorder_status.To(2),
+                    Tables.orders.Colorder_date.To(new DateTime(2020, 6, 6)),
+                    Tables.orders.Colrequired_date.To(new DateTime(2020, 9, 30)),
+                    Tables.orders.Colstore_id.To(1),
+                    Tables.orders.Colstaff_id.To(1))
+                .ReadValue(Tables.orders.Colorder_id));
         }
     }
 }

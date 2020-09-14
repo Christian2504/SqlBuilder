@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace SqlBuilderFramework
+﻿namespace SqlBuilderFramework
 {
-    public class SqlBuilderReader : IDisposable
+    public class SqlBuilderReader : ISqlBuilderReader
     {
         private DbResultSet _resultSet;
         private ISqlBuilder _sqlBuilder;
@@ -13,11 +11,6 @@ namespace SqlBuilderFramework
             _sqlBuilder = sqlBuilder;
         }
 
-        public void Dispose()
-        {
-            _resultSet?.Dispose();
-        }
-
         public bool Next()
         {
             if (!(_resultSet?.Next() ?? false))
@@ -26,6 +19,11 @@ namespace SqlBuilderFramework
             _sqlBuilder?.SetValues(_resultSet);
 
             return true;
+        }
+
+        public void Dispose()
+        {
+            _resultSet?.Dispose();
         }
     }
 }

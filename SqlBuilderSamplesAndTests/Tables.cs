@@ -20,7 +20,7 @@ namespace SqlBuilderSamplesAndTests
             return null;
         }
 
-        public DbTypedColumn<int?> Colbrand_id => new DbTypedColumn<int?>(new DbTableColumn(this, "brand_id", 0, 0));
+        public DbTypedColumn<int> Colbrand_id => new DbTypedColumn<int>(new DbTableColumn(this, "brand_id", 0, 0));
         public DbTypedColumn<string> Colbrand_name => new DbTypedColumn<string>(new DbTableColumn(this, "brand_name", 255, 0));
     }
 
@@ -38,7 +38,7 @@ namespace SqlBuilderSamplesAndTests
             return null;
         }
 
-        public DbTypedColumn<int?> Colcategory_id => new DbTypedColumn<int?>(new DbTableColumn(this, "category_id", 0, 0));
+        public DbTypedColumn<int> Colcategory_id => new DbTypedColumn<int>(new DbTableColumn(this, "category_id", 0, 0));
         public DbTypedColumn<string> Colcategory_name => new DbTypedColumn<string>(new DbTableColumn(this, "category_name", 255, 0));
     }
 
@@ -57,7 +57,7 @@ namespace SqlBuilderSamplesAndTests
         }
 
         public DbTypedColumn<string> Colcity => new DbTypedColumn<string>(new DbTableColumn(this, "city", 50, 0));
-        public DbTypedColumn<int?> Colcustomer_id => new DbTypedColumn<int?>(new DbTableColumn(this, "customer_id", 0, 0));
+        public DbTypedColumn<int> Colcustomer_id => new DbTypedColumn<int>(new DbTableColumn(this, "customer_id", 0, 0));
         public DbTypedColumn<string> Colemail => new DbTypedColumn<string>(new DbTableColumn(this, "email", 255, 0));
         public DbTypedColumn<string> Colfirst_name => new DbTypedColumn<string>(new DbTableColumn(this, "first_name", 255, 0));
         public DbTypedColumn<string> Collast_name => new DbTypedColumn<string>(new DbTableColumn(this, "last_name", 255, 0));
@@ -105,7 +105,7 @@ namespace SqlBuilderSamplesAndTests
 
         public DbTypedColumn<int?> Colcustomer_id => new DbTypedColumn<int?>(new DbTableColumn(this, "customer_id", 0, 0));
         public DbTypedColumn<DateTime> Colorder_date => new DbTypedColumn<DateTime>(new DbTableColumn(this, "order_date", 0, 0));
-        public DbTypedColumn<int?> Colorder_id => new DbTypedColumn<int?>(new DbTableColumn(this, "order_id", 0, 0));
+        public DbTypedColumn<int> Colorder_id => new DbTypedColumn<int>(new DbTableColumn(this, "order_id", 0, 0));
         public DbTypedColumn<int> Colorder_status => new DbTypedColumn<int>(new DbTableColumn(this, "order_status", 0, 0));
         public DbTypedColumn<DateTime> Colrequired_date => new DbTypedColumn<DateTime>(new DbTableColumn(this, "required_date", 0, 0));
         public DbTypedColumn<DateTime?> Colshipped_date => new DbTypedColumn<DateTime?>(new DbTableColumn(this, "shipped_date", 0, 0));
@@ -131,7 +131,7 @@ namespace SqlBuilderSamplesAndTests
         public DbTypedColumn<int> Colcategory_id => new DbTypedColumn<int>(new DbTableColumn(this, "category_id", 0, 0));
         public DbTypedColumn<decimal> Collist_price => new DbTypedColumn<decimal>(new DbTableColumn(this, "list_price", 10, 2));
         public DbTypedColumn<int> Colmodel_year => new DbTypedColumn<int>(new DbTableColumn(this, "model_year", 0, 0));
-        public DbTypedColumn<int?> Colproduct_id => new DbTypedColumn<int?>(new DbTableColumn(this, "product_id", 0, 0));
+        public DbTypedColumn<int> Colproduct_id => new DbTypedColumn<int>(new DbTableColumn(this, "product_id", 0, 0));
         public DbTypedColumn<string> Colproduct_name => new DbTypedColumn<string>(new DbTableColumn(this, "product_name", 255, 0));
     }
 
@@ -179,7 +179,7 @@ namespace SqlBuilderSamplesAndTests
         public DbTypedColumn<string> Collast_name => new DbTypedColumn<string>(new DbTableColumn(this, "last_name", 50, 0));
         public DbTypedColumn<int?> Colmanager_id => new DbTypedColumn<int?>(new DbTableColumn(this, "manager_id", 0, 0));
         public DbTypedColumn<string> Colphone => new DbTypedColumn<string>(new DbTableColumn(this, "phone", 25, 0));
-        public DbTypedColumn<int?> Colstaff_id => new DbTypedColumn<int?>(new DbTableColumn(this, "staff_id", 0, 0));
+        public DbTypedColumn<int> Colstaff_id => new DbTypedColumn<int>(new DbTableColumn(this, "staff_id", 0, 0));
         public DbTypedColumn<int> Colstore_id => new DbTypedColumn<int>(new DbTableColumn(this, "store_id", 0, 0));
     }
 
@@ -220,7 +220,7 @@ namespace SqlBuilderSamplesAndTests
         public DbTypedColumn<string> Colemail => new DbTypedColumn<string>(new DbTableColumn(this, "email", 255, 0));
         public DbTypedColumn<string> Colphone => new DbTypedColumn<string>(new DbTableColumn(this, "phone", 25, 0));
         public DbTypedColumn<string> Colstate => new DbTypedColumn<string>(new DbTableColumn(this, "state", 10, 0));
-        public DbTypedColumn<int?> Colstore_id => new DbTypedColumn<int?>(new DbTableColumn(this, "store_id", 0, 0));
+        public DbTypedColumn<int> Colstore_id => new DbTypedColumn<int>(new DbTableColumn(this, "store_id", 0, 0));
         public DbTypedColumn<string> Colstore_name => new DbTypedColumn<string>(new DbTableColumn(this, "store_name", 255, 0));
         public DbTypedColumn<string> Colstreet => new DbTypedColumn<string>(new DbTableColumn(this, "street", 255, 0));
         public DbTypedColumn<string> Colzip_code => new DbTypedColumn<string>(new DbTableColumn(this, "zip_code", 5, 0));

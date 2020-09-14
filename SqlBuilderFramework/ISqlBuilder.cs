@@ -5,7 +5,7 @@ namespace SqlBuilderFramework
 {
     public interface ISqlBuilder
     {
-        SqlBuilderReader ExecuteReader(IDatabase database);
+        ISqlBuilderReader ExecuteReader(IDatabase database);
 
         int ExecuteNonQuery(IDatabase database);
 

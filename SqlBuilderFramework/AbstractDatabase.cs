@@ -89,7 +89,7 @@ namespace SqlBuilderFramework
             return true;
         }
 
-        public SqlBuilderReader ExecuteReader(ISqlBuilder sql)
+        public ISqlBuilderReader ExecuteReader(ISqlBuilder sql)
         {
             return sql.ExecuteReader(this);
         }

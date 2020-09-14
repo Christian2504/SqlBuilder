@@ -493,16 +493,60 @@ namespace SqlBuilderFramework
             }
         }
 
-        public SqlBuilderReader ExecuteReader(IDatabase database)
+        public ISqlBuilderReader ExecuteReader(IDatabase database)
         {
             Database = database;
             return ExecuteReader();
         }
 
-        public SqlBuilderReader ExecuteReader()
+        public ISqlBuilderReader ExecuteReader()
         {
             using (var command = Command())
             {
+                if (StatementType == SqlType.Insert && Database.Provider == DatabaseProvider.Sqlite)
+                {
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Next())
+                        {
+                            var rowId = reader.GetLong(0);
+
+                            if (rowId > 0L)
+                                return new SqlBuilderReader(
+                                    Database.ExecuteReader(
+                                        $"SELECT {string.Join(", ", _selectedColumns.Select(column => column.Definition(null, this, Database)))} FROM {_in.Sql(null, this, Database)} WHERE rowid = {rowId}"
+                                    ),
+                                    this);
+                        }
+                    }
+
+                    return null;
+                }
+
+                if ((StatementType == SqlType.Insert || StatementType == SqlType.Update) && Database.Provider == DatabaseProvider.Oracle)
+                {
+                    // DML ausfühern
+                    var affectedRows = command.ExecuteNonQuery();
+
+                    if (affectedRows == 1 && _selectedColumns.Count > 0) // Implizite Rückgabewerte abfragen
+                    {
+                        int i = 0;
+
+                        foreach (var parameter in command.Parameters)
+                        {
+                            if (i == _selectedColumns.Count)
+                                break;
+
+                            _selectedColumns[i].BoundValue?.SetValue(parameter.Value);
+                            i++;
+                        }
+
+                        return new SqlSimReader();
+                    }
+
+                    return null;
+                }
+
                 return new SqlBuilderReader(command?.ExecuteReader(), this);
             }
         }
@@ -597,18 +641,6 @@ namespace SqlBuilderFramework
                         i++;
                     }
                 }
-                //else if (database.Provider == DatabaseProvider.MsSql)
-                //{
-                //    int i = 0;
-                //    foreach (var parameter in command.Parameters)
-                //    {
-                //        if (i == _selectedColumns.Count)
-                //            break;
-
-                //        _selectedColumns[i].BoundValue?.SetValue(parameter.Value);
-                //        i++;
-                //    }
-                //}
             }
 
             return affectedRows;
@@ -616,7 +648,7 @@ namespace SqlBuilderFramework
 
         public void SetValues(DbResultSet resultSet)
         {
-            for (int i = 0; i < _selectedColumns.Count; i++)
+            for (int i = 0; i < _selectedColumns.Count; ++i)
                 _selectedColumns[i].BoundValue?.SetValue(resultSet, i);
         }
 
@@ -789,17 +821,6 @@ namespace SqlBuilderFramework
                         counter++;
                     }
                 }
-                //else if (database.Provider == DatabaseProvider.MsSql)
-                //{
-                //    // Supply the parameters for the OUTPUT...INTO clause
-                //    var counter = 0;
-
-                //    foreach (var column in _selectedColumns)
-                //    {
-                //        command.AddParameter("par" + counter.ToString("D2"), column.DbValue, database.ToDbType(column.ValueType), 0, ParameterDirection.Output);
-                //        counter++;
-                //    }
-                //}
             }
 
             foreach (var parameter in parameterList)

@@ -61,7 +61,7 @@ namespace SqlBuilderFramework
         /// </summary>
         /// <param name="sql"></param>
         /// <returns></returns>
-        SqlBuilderReader ExecuteReader(ISqlBuilder sql);
+        ISqlBuilderReader ExecuteReader(ISqlBuilder sql);
 
         /// <summary>
         /// Daten auslesen
