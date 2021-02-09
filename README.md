@@ -1,9 +1,7 @@
 # SqlBuilder
 
-SqlBuilder is a C# framework that creates and executes database commands without using string literals.
+SqlBuilder is a C# framework with which you can create and execute database commands without writing string literals.
 
-It is a pure C# implementation without reflection or linq expression trees.
-
-Downside: 'where' expressions cannot use the '&&' and '||' operators. Instead the '&' and '|' operators must be used to create conditional expressions.
+It is implemented in pure C# without using reflection or linq expression trees. This is also the reason why conditional expressions in where clauses use single '|' and '&' operators for OR and AND instead of their logical counterparts '||' and '&&'.
 
 See SqlBuilderFramework/Readme.md for more details.
